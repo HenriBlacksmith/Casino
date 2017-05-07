@@ -26,6 +26,8 @@ class Roulette(object):
         
         self.COLORS = ['g','r','k','r','k','r','k','r','k','r','k','k','r','k','r','k','r','k','r','r','k','r','k','r','k','r','k','r','k','k','r','k','r','k','r','k','r']
         self.NUMBERS = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36]
+        self.ORDERED_NUMBERS = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,17,28,12,35,3,26]
+        self.ORDERED_COLORS = ['g', 'r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k']
     # --getters
     def get_results(self):
         return self.results
@@ -104,6 +106,22 @@ class Roulette(object):
             else :
                 self.results[3,i] = 'Derniere'
     
+    def __display_roulette(self, sizes, labels):
+        roulette_ordered_sizes = []
+        new_labels = np.zeros(37)
+        new_sizes = np.zeros(37)
+        j=0
+        for i,x in enumerate(self.ORDERED_NUMBERS):
+            new_labels[i] = self.ORDERED_NUMBERS[i]
+            if x in labels :
+                new_sizes[i] = sizes[j]
+                j=+1
+            else :
+                new_sizes[i]=0 
+        for i in xrange(len(self.ORDERED_NUMBERS)):
+                roulette_ordered_sizes.append(new_sizes[i])
+        return roulette_ordered_sizes
+
     # --public methods
     def plot_stats(self):
         plt.figure('Statistics')
@@ -126,15 +144,15 @@ class Roulette(object):
         barlist[2].set_color('g')
         plt.xticks(range(len(self.stats['Colonne'])), self.stats['Colonne'].keys()) 
         plt.subplot(122)
-        
-        labels = self.__text_to_stat(self.__lnum_to_lstr(self.tirages)).keys()
-        sizes = self.__text_to_stat(self.tirages).values()
-        colors = self.COLORS
-        plt.pie(sizes, labels=labels, shadow=True, colors=colors)
-    
-    def display_roulette(self):
-        pass
-    
+        # Plots the roulette as a pie chart
+        old_labels = self.__text_to_stat(self.__lnum_to_lstr(self.tirages)).keys()
+        old_sizes = self.__text_to_stat(self.tirages).values()
+        print len(old_sizes),'old sizes',old_sizes
+        print len(old_labels),'old_labels',old_labels
+        sizes = self.__display_roulette(old_sizes, old_labels)
+        colors = self.ORDERED_COLORS
+        plt.pie(sizes, labels=self.ORDERED_NUMBERS, shadow=True, colors=colors)    
+
     def martingale_simple(self, mise_initiale, banque_initiale):
         cl = self.results[1,:]
         mise = []
