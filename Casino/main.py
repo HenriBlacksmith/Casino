@@ -1,7 +1,7 @@
 # --imports
 import matplotlib.pyplot as plt
 # --class imports
-from roulette import Roulette
+from Roulette import Roulette
 # --run
 
 r = Roulette(100)
