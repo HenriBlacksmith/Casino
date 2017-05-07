@@ -1,7 +1,8 @@
-
+# Roulette.py
 # --imports
 import matplotlib.pyplot as plt
 import numpy as np
+import csv
 from numpy.random import randint
 
 # --class
@@ -27,14 +28,39 @@ class Roulette(object):
         return self.results
     
     # --private methods
+    def __text_to_stat(self, l):
+        d = {}
+        for i in xrange(len(l)):
+            if not l[i] in d.keys():
+                d[l[i]] = 1
+            else :
+                d[l[i]] += 1
+        return d
+    
+    def __to_stat(self, l, l_keys):
+        d = {}
+        for k in l_keys:
+            d[k]=0
+        for i in xrange(len(l)):
+            if not l[i] in l_keys:
+                print 'Error', l[i], 'is not in the pre-defined keys'
+            else :
+                d[l[i]] += 1
+        return d
+    
+    def __lnum_to_lstr(self, l):
+        for i,x in enumerate(l):
+            l[i] = str(x)
+        return l
+    
     def __generer_tirages(self, i):
         return randint(0,37,i)
     
     def __compute_stats(self):
-        self.stats['Parite'] = self.to_stat(self.results[0,:], ['Pair', 'Impair', 'Zero'])
-        self.stats['Couleur'] = self.to_stat(self.results[1,:], ['Rouge', 'Noir', 'Zero'])
-        self.stats['PM'] = self.to_stat(self.results[2,:], ['Passe', 'Manque', 'Zero'])
-        self.stats['Colonne'] = self.to_stat(self.results[3,:], ['Premiere', 'Milieu', 'Derniere', 'Zero'])
+        self.stats['Parite'] = self.__to_stat(self.results[0,:], ['Pair', 'Impair', 'Zero'])
+        self.stats['Couleur'] = self.__to_stat(self.results[1,:], ['Rouge', 'Noir', 'Zero'])
+        self.stats['PM'] = self.__to_stat(self.results[2,:], ['Passe', 'Manque', 'Zero'])
+        self.stats['Colonne'] = self.__to_stat(self.results[3,:], ['Premiere', 'Milieu', 'Derniere', 'Zero'])
     
     def __pair_impair(self):
         for i in xrange(len(self.tirages)):
@@ -98,8 +124,8 @@ class Roulette(object):
         plt.xticks(range(len(self.stats['Colonne'])), self.stats['Colonne'].keys()) 
         plt.subplot(122)
         
-        labels = self.text_to_stat(self.lnum_to_lstr(self.tirages)).keys()
-        sizes = self.text_to_stat(self.tirages).values()
+        labels = self.__text_to_stat(self.__lnum_to_lstr(self.tirages)).keys()
+        sizes = self.__text_to_stat(self.tirages).values()
         colors = self.COLORS
         plt.pie(sizes, labels=labels, shadow=True, colors=colors)
     
@@ -145,27 +171,14 @@ class Roulette(object):
         print 'banque maximale =', banque_max 
         return banque_vec
     
-    def to_stat(self, l, l_keys):
-        d = {}
-        for k in l_keys:
-            d[k]=0
-        for i in xrange(len(l)):
-            if not l[i] in l_keys:
-                print 'Error', l[i], 'is not in the pre-defined keys'
-            else :
-                d[l[i]] += 1
-        return d
-    
-    def text_to_stat(self, l):
-        d = {}
-        for i in xrange(len(l)):
-            if not l[i] in d.keys():
-                d[l[i]] = 1
-            else :
-                d[l[i]] += 1
-        return d
-    
-    def lnum_to_lstr(self, l):
-        for i,x in enumerate(l):
-            l[i] = str(x)
-        return l
+    def save_to_file(self, filename, format='csv'):
+        if format == 'text':
+            file = open(filename+'.dat')
+        else:
+            with open(filename+'.csv', 'w') as csvfile:
+                fieldnames = ['Numero', 'Couleur', 'Parite', 'Colonne', 'Passe-Manque']
+                
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                for i in xrange(self.nb_tirages):
+                    writer.writerow({'Numero': str(self.tirages[i]), 'Couleur': self.results[0,i], 'Parite': self.results[1,i], 'Passe-Manque': self.results[2,i], 'Colonne': self.results[3,i]})
