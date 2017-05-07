@@ -1,4 +1,8 @@
-# Roulette.py
+'''
+    Roulette.py
+    @author: HenriBlacksmith
+    @license: GNU GPL
+'''
 # --imports
 import matplotlib.pyplot as plt
 import numpy as np
@@ -11,6 +15,13 @@ class Roulette(object):
         '''
             Builder
         '''
+        # --constants
+        self.RED = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36]
+        self.COLORS = ['g','r','k','r','k','r','k','r','k','r','k','k','r','k','r','k','r','k','r','r','k','r','k','r','k','r','k','r','k','k','r','k','r','k','r','k','r']
+        self.NUMBERS = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36]
+        self.ORDERED_NUMBERS = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,17,28,12,35,3,26]
+        self.ORDERED_COLORS = ['g', 'r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k']
+        
         self.nb_tirages = k
         self.tirages = self.__generer_tirages(self.nb_tirages)
         
@@ -23,15 +34,13 @@ class Roulette(object):
         self.__colonne()
         self.stats = {}
         self.__compute_stats()
-        
-        self.COLORS = ['g','r','k','r','k','r','k','r','k','r','k','k','r','k','r','k','r','k','r','r','k','r','k','r','k','r','k','r','k','k','r','k','r','k','r','k','r']
-        self.NUMBERS = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36]
-        self.ORDERED_NUMBERS = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,17,28,12,35,3,26]
-        self.ORDERED_COLORS = ['g', 'r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k','r','k']
+    
     # --getters
     def get_results(self):
         return self.results
     
+    def get_RED(self):
+        return self.RED
     # --private methods
     def __text_to_stat(self, l):
         d = {}
@@ -77,9 +86,8 @@ class Roulette(object):
                 self.results[0,i] = 'Impair'
 
     def __couleur(self):
-        red = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36]
         for i in xrange(len(self.tirages)):
-            if self.tirages[i] in red :
+            if self.tirages[i] in self.get_RED() :
                 self.results[1,i] = 'Rouge'
             elif self.tirages[i] == 0 :
                 self.results[1,i] = 'Zero'
@@ -123,7 +131,7 @@ class Roulette(object):
         return roulette_ordered_sizes
 
     # --public methods
-    def plot_stats(self):
+    def plot_stats(self, filename):
         plt.figure('Statistics')
         plt.subplot(241)
         barlist = plt.bar(range(len(self.stats['Parite'])), self.stats['Parite'].values(), align='center')
@@ -151,46 +159,8 @@ class Roulette(object):
         print len(old_labels),'old_labels',old_labels
         sizes = self.__display_roulette(old_sizes, old_labels)
         colors = self.ORDERED_COLORS
-        plt.pie(sizes, labels=self.ORDERED_NUMBERS, shadow=True, colors=colors)    
-
-    def martingale_simple(self, mise_initiale, banque_initiale):
-        cl = self.results[1,:]
-        mise = []
-        gagnant = [] 
-        gains = []
-        banque = banque_initiale
-        banque_max = banque_initiale
-        banque_vec = []
-        banque_vec.append(banque_initiale)
-        enchere_courante = 1
-        mise.append(mise_initiale)
-        for k in xrange(len(cl)):
-            if mise[k] == cl[k]:
-                gain = enchere_courante*2
-                enchere_courante = 1
-                gagnant.append('Oui')
-                if mise[k]=='Rouge':
-                    mise.append('Noir')
-                else :
-                    mise.append('Rouge')
-            else :
-                gain = -enchere_courante
-                enchere_courante = enchere_courante*2
-                gagnant.append('Non')
-                mise.append(mise[k])
-            gains.append(gain)
-            banque += gain
-            if banque > banque_max :
-                banque_max = banque
-            if banque<0 :
-                print 'Perdu'
-                print 'gains', gains
-                print 'banque maximale =', banque_max
-                return banque_vec
-            banque_vec.append(banque)
-        print 'gains', gains
-        print 'banque maximale =', banque_max 
-        return banque_vec
+        plt.pie(sizes, labels=self.ORDERED_NUMBERS, shadow=True, colors=colors)  
+        plt.savefig(filename + '.png', format='png')  
     
     def save_to_file(self, filename, format='csv'):
         '''

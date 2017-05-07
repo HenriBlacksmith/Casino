@@ -1,13 +1,9 @@
 # --imports
-import matplotlib.pyplot as plt
 # --class imports
-from Roulette import Roulette
+from Martingale import Martingale
 # --run
 
-r = Roulette(1000)
-r.plot_stats()
-r.save_to_file('Test_1', format = 'csv')
-
-plt.figure('Banque')
-plt.plot(r.martingale_simple('Noir', 10))
-plt.show()
+m = Martingale(10)
+m.get_tirage().plot_stats('Test_tirage')
+m.martingale_simple(1)
+m.display_results('Test_martingale')
