@@ -132,6 +132,7 @@ class Roulette(object):
 
     # --public methods
     def plot_stats(self, filename):
+        plt.rcParams.update({'font.size': 4})
         plt.figure('Statistics')
         plt.subplot(241)
         barlist = plt.bar(range(len(self.stats['Parite'])), self.stats['Parite'].values(), align='center')
@@ -155,12 +156,10 @@ class Roulette(object):
         # Plots the roulette as a pie chart
         old_labels = self.__text_to_stat(self.__lnum_to_lstr(self.tirages)).keys()
         old_sizes = self.__text_to_stat(self.tirages).values()
-        print len(old_sizes),'old sizes',old_sizes
-        print len(old_labels),'old_labels',old_labels
         sizes = self.__display_roulette(old_sizes, old_labels)
         colors = self.ORDERED_COLORS
         plt.pie(sizes, labels=self.ORDERED_NUMBERS, shadow=True, colors=colors)  
-        plt.savefig(filename + '.png', format='png')  
+        plt.savefig(filename + '.png', format='png', dpi=300)  
     
     def save_to_file(self, filename, format='csv'):
         '''

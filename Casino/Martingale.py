@@ -48,6 +48,7 @@ class Martingale(object):
             banque += gain
             if banque<0 :
                 print 'Perdu'
+                return None
             self.banque_vec.append(banque)
             
     def display_results(self, filename):
@@ -55,5 +56,5 @@ class Martingale(object):
         plt.plot(self.banque_vec)
         plt.ylabel('Banque')
         plt.xlabel('#tirage')
-        plt.savefig(filename+'.png',format='png')
+        plt.savefig(filename+'.png',format='png',dpi=300)
         print 'Maximum value of the bank = ',max(self.banque_vec),'units'
