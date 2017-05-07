@@ -8,6 +8,9 @@ from numpy.random import randint
 # --class
 class Roulette(object):
     def __init__(self, k):
+        '''
+            Builder
+        '''
         self.nb_tirages = k
         self.tirages = self.__generer_tirages(self.nb_tirages)
         
@@ -172,12 +175,20 @@ class Roulette(object):
         return banque_vec
     
     def save_to_file(self, filename, format='csv'):
+        '''
+            Sauvegarde les tirages dans un fichier au format texte ou CSV
+            @param filename: nom du fichier sans extension
+            @param format: format de fichier choisi (defaut: CSV)
+        '''
         if format == 'text':
-            file = open(filename+'.dat')
+            f = open(filename+'.dat', 'w')
+            f.write('Numero    Couleur    Parite    Colonne    Passe-Manque\n')
+            for i in xrange(self.nb_tirages):
+                    f.write(str(self.tirages[i])+'    '+self.results[0,i]+'    '+self.results[1,i]+'    '+self.results[2,i]+'    '+self.results[3,i]+'\n')
+            f.close()
         else:
             with open(filename+'.csv', 'w') as csvfile:
                 fieldnames = ['Numero', 'Couleur', 'Parite', 'Colonne', 'Passe-Manque']
-                
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 writer.writeheader()
                 for i in xrange(self.nb_tirages):
