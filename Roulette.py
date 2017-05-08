@@ -6,7 +6,8 @@
 # --imports
 import matplotlib.pyplot as plt
 import numpy as np
-import csv
+import csv # For use of CSV (Comma Separated Values) files
+import re # For RegExp
 from numpy.random import randint
 
 # --class
@@ -169,9 +170,9 @@ class Roulette(object):
         '''
         if format == 'text':
             f = open(filename+'.dat', 'w')
-            f.write('Numero    Couleur    Parite    Colonne    Passe-Manque\n')
+            f.write('Numero\tCouleur\tParite\tColonne\tPasse-Manque\n')
             for i in xrange(self.nb_tirages):
-                    f.write(str(self.tirages[i])+'    '+self.results[0,i]+'    '+self.results[1,i]+'    '+self.results[2,i]+'    '+self.results[3,i]+'\n')
+                    f.write(str(self.tirages[i])+'\t'+self.results[0,i]+'\t'+self.results[1,i]+'\t'+self.results[2,i]+'\t'+self.results[3,i]+'\n')
             f.close()
         else:
             with open(filename+'.csv', 'w') as csvfile:
@@ -180,3 +181,31 @@ class Roulette(object):
                 writer.writeheader()
                 for i in xrange(self.nb_tirages):
                     writer.writerow({'Numero': str(self.tirages[i]), 'Couleur': self.results[0,i], 'Parite': self.results[1,i], 'Passe-Manque': self.results[2,i], 'Colonne': self.results[3,i]})
+    
+    def load_from_file(self, path_to_file):
+        '''
+            Charge des tirages depuis un fichier texte ou CSV. 
+            Les numeros seuls sont charges et les resultats sont recalcules.
+            @param path_to_file : chemin vers le fichier a charger
+        '''
+        # Clearing attributes
+        self.tirages = []
+        # Regular expressions to test file extensions
+        test = re.search('.*.dat$|.*.txt$', path_to_file)
+        test2 = re.search('.*.csv$', path_to_file)
+        if test.group(0) == path_to_file:
+            # In case of a .txt or .dat file
+            f = open(path_to_file, 'r')
+            for k,line in enumerate(f):
+                if k != 0:
+                    values = line.split('\t')
+                    self.tirages.append(int(values[0]))
+            self.nb_tirages = k-1
+            self.__pair_impair()
+            self.__couleur()
+            self.__passe_manque()
+            self.__colonne()
+        elif test2.group(0) == path_to_file:
+            pass
+        else:
+            print 'Extension de fichier invalide'
