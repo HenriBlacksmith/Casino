@@ -1,11 +1,12 @@
 # --imports
-import matplotlib.pyplot as plt
 # --class imports
-from roulette import Roulette
+from Martingale import Martingale
 # --run
+nb_tirages = 100
+mise_initiale = 'Noir'
+banque_initiale = 5
 
-r = Roulette(10000)
-r.plot_stats()
-plt.figure('Banque')
-plt.plot(r.martingale_simple('Noir', 10))
-plt.show()
+m = Martingale(nb_tirages, banque_initiale)
+m.get_tirage().plot_stats('Test_tirage')
+m.martingale_simple(mise_initiale)
+m.display_results('Test_martingale')
